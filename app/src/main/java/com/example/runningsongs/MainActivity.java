@@ -3,6 +3,8 @@ package com.example.runningsongs;
         import android.app.Dialog;
         import android.content.Intent;
         import android.content.IntentSender;
+        import android.support.annotation.NonNull;
+        import android.support.annotation.Nullable;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.util.Log;
@@ -18,19 +20,22 @@ package com.example.runningsongs;
         import com.google.android.gms.common.api.Scope;
         import com.google.android.gms.common.api.Status;
         import com.google.android.gms.fitness.Fitness;
+        import com.google.android.gms.fitness.FitnessStatusCodes;
         import com.google.android.gms.fitness.data.DataPoint;
         import com.google.android.gms.fitness.data.DataSource;
         import com.google.android.gms.fitness.data.DataType;
         import com.google.android.gms.fitness.data.Field;
+        import com.google.android.gms.fitness.data.Subscription;
         import com.google.android.gms.fitness.data.Value;
         import com.google.android.gms.fitness.request.DataSourcesRequest;
         import com.google.android.gms.fitness.request.OnDataPointListener;
         import com.google.android.gms.fitness.request.SensorRequest;
         import com.google.android.gms.fitness.result.DataSourcesResult;
+        import com.google.android.gms.fitness.result.ListSubscriptionsResult;
 
         import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements OnDataPointListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements OnDataPointListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -40,6 +45,39 @@ public class MainActivity extends AppCompatActivity implements OnDataPointListen
     private static final String AUTH_PENDING = "auth_state_pending";
     private boolean authInProgress = false;
     private GoogleApiClient mApiClient;
+
+    private Button mCancelSubscriptionsBtn;
+    private Button mShowSubscriptionsBtn;
+
+    private ResultCallback<Status> mSubscribeResultCallback;
+    private ResultCallback<Status> mCancelSubscriptionResultCallback;
+    private ResultCallback<ListSubscriptionsResult> mListSubscriptionsResultCallback;
+
+//    private GoogleApiClient mGoogleApiClient;
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btn_cancel_subscriptions: {
+                cancelSubscriptions();
+                break;
+            }
+            case R.id.btn_show_subscriptions: {
+                showSubscriptions();
+                break;
+            }
+        }
+    }
+
+    private void showSubscriptions() {
+        Fitness.RecordingApi.listSubscriptions(mApiClient)
+                .setResultCallback(mListSubscriptionsResultCallback);
+    }
+
+    private void cancelSubscriptions() {
+        Fitness.RecordingApi.unsubscribe(mApiClient, DataType.TYPE_STEP_COUNT_DELTA)
+                .setResultCallback(mCancelSubscriptionResultCallback);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +97,60 @@ public class MainActivity extends AppCompatActivity implements OnDataPointListen
                 .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ_WRITE))
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(Fitness.RECORDING_API)
+                .addConnectionCallbacks(this)
+                .enableAutoManage(this, 0, this)
                 .build();
+        initViews();
+        initCallbacks();
+    }
+
+    private void initViews() {
+        mCancelSubscriptionsBtn = (Button) findViewById(R.id.btn_cancel_subscriptions);
+        mShowSubscriptionsBtn = (Button) findViewById(R.id.btn_show_subscriptions);
+
+        mCancelSubscriptionsBtn.setOnClickListener(this);
+        mShowSubscriptionsBtn.setOnClickListener(this);
+    }
+
+    private void initCallbacks() {
+        mSubscribeResultCallback = new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()) {
+                    if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                        Log.e( "RecordingAPI", "Already subscribed to the Recording API");
+                    } else {
+                        Log.e("RecordingAPI", "Subscribed to the Recording API");
+                    }
+                }
+            }
+        };
+
+        mCancelSubscriptionResultCallback = new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()) {
+                    Log.e( "RecordingAPI", "Canceled subscriptions!");
+                } else {
+                    // Subscription not removed
+                    Log.e("RecordingAPI", "Failed to cancel subscriptions");
+                }
+            }
+        };
+
+        mListSubscriptionsResultCallback = new ResultCallback<ListSubscriptionsResult>() {
+            @Override
+            public void onResult(@NonNull ListSubscriptionsResult listSubscriptionsResult) {
+                for (Subscription subscription : listSubscriptionsResult.getSubscriptions()) {
+                    DataType dataType = subscription.getDataType();
+                    Log.e( "RecordingAPI", dataType.getName() );
+                    for (Field field : dataType.getFields() ) {
+                        Log.e( "RecordingAPI", field.toString() );
+                    }
+                }
+            }
+        };
     }
 
     @Override
@@ -155,6 +246,8 @@ public class MainActivity extends AppCompatActivity implements OnDataPointListen
 
         Fitness.SensorsApi.findDataSources(mApiClient, dataSourceRequest)
                 .setResultCallback(dataSourcesResultCallback);
+        Fitness.RecordingApi.subscribe(mApiClient, DataType.TYPE_STEP_COUNT_DELTA)
+                .setResultCallback(mSubscribeResultCallback);
     }
 
     private void registerFitnessDataListener(DataSource dataSource, DataType dataType) {
