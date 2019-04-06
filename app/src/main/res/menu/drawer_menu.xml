@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_Option1"
+            android:icon="@drawable/ic_workout"
+            android:title="Option 1" />
+        <item
+        android:id="@+id/nav_Option2"
+        android:icon="@drawable/ic_home"
+        android:title="Option 2" />
+        <item
+            android:id="@+id/nav_Option3"
+            android:icon="@drawable/ic_home"
+            android:title="Option 3" />
+        <item
+            android:id="@+id/nav_Option4"
+            android:icon="@drawable/ic_home"
+            android:title="Option 4" />
+    </group>
+
+
+
+</menu>
