@@ -31,6 +31,7 @@ public class SongStampsListActivity extends AppCompatActivity {
 
     private void populateListView() {
         List<String> titles = new ArrayList<String>();
+
         for(SongStamp ss: stampsList) {
             titles.add(ss.song.title);
         }

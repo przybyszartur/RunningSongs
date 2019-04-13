@@ -3,6 +3,9 @@ package com.example.runningsongs;
 
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +14,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.runningsongs.models.Song;
+import com.example.runningsongs.models.SongListener;
+import com.example.runningsongs.models.SongListenerDelegate;
+import com.example.runningsongs.models.SongStamp;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -19,13 +27,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Calendar;
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback {
+
+public class HomeFragment extends Fragment implements OnMapReadyCallback, SongListenerDelegate {
 
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;
-
+    SongListener listener;
 
     public HomeFragment() {
 
@@ -35,6 +45,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        listener = new SongListener(getActivity());
+        listener.delegate = this;
     }
 
 
@@ -55,6 +67,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+
+        listener.start();
     }
 
     @Override
@@ -70,12 +84,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             return;
         }
         googleMap.setMyLocationEnabled(true);
 
+    }
+
+    //////////////////////////////////////////////// Nsaluchiwa
 
 
+    @Override
+    public void onSongReceived(Song song) {
+        // Zapisac w liscie aktywnosci
+        Toast.makeText(getContext(), song.title, Toast.LENGTH_SHORT).show();
+
+        SongStamp stamp = new SongStamp(song, Calendar.getInstance().getTime());
     }
 }
