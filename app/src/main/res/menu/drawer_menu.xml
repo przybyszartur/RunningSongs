@@ -9,21 +9,13 @@
             android:icon="@drawable/ic_home"
             android:title="Home" />
         <item
-            android:id="@+id/nav_Option1"
+            android:id="@+id/nav_history"
             android:icon="@drawable/ic_workout"
-            android:title="Option 1" />
+            android:title="History" />
         <item
-        android:id="@+id/nav_Option2"
-        android:icon="@drawable/ic_home"
-        android:title="Option 2" />
-        <item
-            android:id="@+id/nav_Option3"
+            android:id="@+id/nav_settings"
             android:icon="@drawable/ic_home"
-            android:title="Option 3" />
-        <item
-            android:id="@+id/nav_Option4"
-            android:icon="@drawable/ic_home"
-            android:title="Option 4" />
+            android:title="Settings" />
     </group>
 
 
