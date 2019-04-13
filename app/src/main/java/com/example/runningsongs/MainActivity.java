@@ -12,6 +12,7 @@ package com.example.runningsongs;
         import android.widget.Button;
         import android.widget.Toast;
 
+        import com.example.runningsongs.models.SongStamp;
         import com.google.android.gms.common.ConnectionResult;
         import com.google.android.gms.common.GoogleApiAvailability;
         import com.google.android.gms.common.Scopes;
@@ -33,6 +34,9 @@ package com.example.runningsongs;
         import com.google.android.gms.fitness.result.DataSourcesResult;
         import com.google.android.gms.fitness.result.ListSubscriptionsResult;
 
+        import java.io.Serializable;
+        import java.util.ArrayList;
+        import java.util.List;
         import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements OnDataPointListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -64,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements OnDataPointListen
             }
             case R.id.btn_show_subscriptions: {
                 showSubscriptions();
+                break;
+            }
+            case R.id.btn_songs_history: {
+                openSongsActivity();
                 break;
             }
         }
@@ -301,6 +309,13 @@ public class MainActivity extends AppCompatActivity implements OnDataPointListen
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    public void openSongsActivity() {
+        Intent chuj = new Intent(this, SongStampsListActivity.class);
+        SongStamp[] list = SongStamp.getFakeSongs();//new ArrayList<Object>();
+        chuj.putExtra("STAMPS", (Serializable) list);
+        startActivity(chuj);
     }
 
 }

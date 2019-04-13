@@ -4,19 +4,31 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:orientation="vertical">
 
-<Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Map"
-    android:id="@+id/btnMap"/>
-<Button
-    android:id="@+id/btn_show_subscriptions"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Show Subscriptions"/>
-<Button
-    android:id="@+id/btn_cancel_subscriptions"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Cancel Subscriptions"/>
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Map" />
+
+    <Button
+        android:id="@+id/btn_show_subscriptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Show Subscriptions" />
+
+    <Button
+        android:id="@+id/btn_cancel_subscriptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Cancel Subscriptions" />
+
+    <Button
+        android:id="@+id/btn_songs_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Open Songs History" />
 </LinearLayout>
