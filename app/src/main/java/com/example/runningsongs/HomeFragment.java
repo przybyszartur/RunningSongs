@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.runningsongs.models.Song;
@@ -24,13 +27,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Calendar;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback, SongListenerDelegate {
+public class HomeFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, SongListenerDelegate {
 
     GoogleMap mGoogleMap;
     MapView mMapView;
@@ -53,6 +58,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, SongLi
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_history, container, false);
+        Button b = (Button) mView.findViewById(R.id.button);
+        b.setOnClickListener(this);
 
         return mView;
     }
@@ -69,6 +76,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, SongLi
         }
 
         listener.start();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button:
+                break;
+        }
     }
 
     @Override
@@ -90,6 +105,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, SongLi
 
     }
 
+    private void addSongMarker(SongStamp songStamp) {
+        Marker melbourne = mGoogleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(40.7143528, -74.0059731))
+                .title(songStamp.song.title)
+                .snippet(songStamp.song.artist));
+    }
+
     //////////////////////////////////////////////// Nsaluchiwa
 
 
@@ -98,6 +120,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, SongLi
         // Zapisac w liscie aktywnosci
         Toast.makeText(getContext(), song.title, Toast.LENGTH_SHORT).show();
 
-        SongStamp stamp = new SongStamp(song, Calendar.getInstance().getTime());
+        SongStamp stamp = new SongStamp(song, new LatLng(40.7143528, -74.0059731));
+        addSongMarker(stamp);
     }
 }
