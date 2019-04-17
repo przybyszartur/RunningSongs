@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,9 +50,10 @@ public class GPS_Service extends Service {
 
         locationManager =
                 (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        locationListener =  new LocationListener() {
+        LocationListener locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(final Location location) {
+                Log.v("Debug", "in onLocation changed..");
                 long timeElapsed = System.currentTimeMillis() - timeOfLastUpdate;
                 if (status == 0) {
                     lat1 = location.getLatitude();
@@ -60,10 +62,18 @@ public class GPS_Service extends Service {
                     lat2 = location.getLatitude();
                     lon2 = location.getLongitude();
                     distance += distanceBetweenTwoPoint(lat1, lon1, lat2, lon2);
+                    Double speed = distance/timeElapsed;
+                    Toast.makeText(getApplicationContext(), "Distance is: "
+                            +distance +"\n "+ "Speed is: " + speed + "km/h", Toast.LENGTH_SHORT).show();
+
                 } else if ((status % 2) == 0) {
                     lat1 = location.getLatitude();
                     lon1 = location.getLongitude();
                     distance += distanceBetweenTwoPoint(lat2, lon2, lat1, lon1);
+                    Double speed = distance/timeElapsed;
+                    Toast.makeText(getApplicationContext(), "Distance is: "
+                            +distance +"\n "+ "Speed is: " + speed + "km/h", Toast.LENGTH_SHORT).show();
+
                 }
                 status++;
                 Intent i = new Intent("location_update");
@@ -75,7 +85,10 @@ public class GPS_Service extends Service {
                 timeOfLastUpdate = System.currentTimeMillis();
 
                 sendBroadcast(i);
+
             }
+
+
             double distanceBetweenTwoPoint(double srcLat, double srcLng, double desLat, double desLng) {
                 double earthRadius = 3958.75;
                 double dLat = Math.toRadians(desLat - srcLat);
@@ -109,15 +122,17 @@ public class GPS_Service extends Service {
         };
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    5, // minimum time interval between updates
-                    5, // minimum distance between updates, in metres
+                    1, // minimum time interval between updates
+                    2, // minimum distance between updates, in metres
                     locationListener);
             Log.d(Tag,"Successful");
         } catch (SecurityException e) {
             Log.d(Tag, e.toString());
         }
     }
-
+    //locationManager =
+//                (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+//        LocationListener locationListener = new LocationListener() {
     @Override
     public void onDestroy() {
         super.onDestroy();
