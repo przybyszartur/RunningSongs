@@ -18,19 +18,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import android.widget.Toast;
 
-
-import com.example.runningsongs_v2.DBHelper;
-import com.example.runningsongs_v2.GPS_Service;
-import com.example.runningsongs_v2.R;
-import com.example.runningsongs_v2.RunnerTracker;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.example.runningsongs_v2.R.id.chronometer2;
 
-public class NewRunActivity extends AppCompatActivity {
+public class NewRunActivity extends AppCompatActivity implements SongListenerDelegate {
     DBHelper dbHelper;
     SQLiteDatabase db;
 
@@ -42,6 +41,8 @@ public class NewRunActivity extends AppCompatActivity {
     private String distance;
     private String time;
     private String date;
+    private SongListener songListener;
+    private List<SongStamp> songStamps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,10 @@ public class NewRunActivity extends AppCompatActivity {
         setContentView(R.layout.newrun);
         btn_start = (Button) findViewById(R.id.button3);
         textView = (TextView) findViewById(R.id.textView);
+        songListener = new SongListener(this);
+        songListener.delegate = this;
+        songListener.start();
+        songStamps = new ArrayList<SongStamp>();
 
         if(!runtime_permissions()){
             enable_buttons();
@@ -87,20 +92,21 @@ public class NewRunActivity extends AppCompatActivity {
         Intent i = new Intent(getApplicationContext(),GPS_Service.class);
         ((Chronometer) findViewById(chronometer2)).stop();
         stopService(i);
+        songListener.stop();
         doStuff();
         Log.d("g53mdp","Stop Service");
     }
+
     private void doStuff(){
         DBHelper dbHandler = new DBHelper(this, null, null, 1);
         double distance = Double.parseDouble(textView.getText().toString());
         String time =  ((Chronometer) findViewById(chronometer2)).getText().toString();
         String date = new SimpleDateFormat("dd--MM--yyyy").format(new Date());
-        RunnerTracker runnerTracker = new RunnerTracker(distance,date,time);
+        RunnerTracker runnerTracker = new RunnerTracker(distance,date,time, songStamps);
 
         dbHandler.addRunnerTracker(runnerTracker);
-
-
     }
+
     private void enable_buttons() {
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +117,6 @@ public class NewRunActivity extends AppCompatActivity {
                 ((Chronometer) findViewById(chronometer2)).start();
             }
         });
-
 
     }
 
@@ -137,5 +142,16 @@ public class NewRunActivity extends AppCompatActivity {
                 runtime_permissions();
             }
         }
+    }
+
+    @Override
+    public void onSongReceived(Song song) {
+        if (song.title.isEmpty() || song.artist.isEmpty()) { return; }
+        Toast.makeText(this, song.title, Toast.LENGTH_SHORT).show();
+        Integer id = songStamps.size();
+        LatLng latLng = new LatLng(2, 2);
+
+        SongStamp s = new SongStamp(id, song, latLng);
+        songStamps.add(s);
     }
 }
