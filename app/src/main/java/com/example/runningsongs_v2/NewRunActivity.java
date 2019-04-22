@@ -43,6 +43,7 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
     private String date;
     private SongListener songListener;
     private List<SongStamp> songStamps;
+    private List<GeoStamp> geoStamps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +103,7 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
         double distance = Double.parseDouble(textView.getText().toString());
         String time =  ((Chronometer) findViewById(chronometer2)).getText().toString();
         String date = new SimpleDateFormat("dd--MM--yyyy").format(new Date());
-        RunnerTracker runnerTracker = new RunnerTracker(distance,date,time, songStamps);
+        RunnerTracker runnerTracker = new RunnerTracker(distance,date,time, songStamps, geoStamps);
 
         dbHandler.addRunnerTracker(runnerTracker);
     }
@@ -113,6 +114,7 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
             public void onClick(View view) {
                 Intent i =new Intent(getApplicationContext(),GPS_Service.class);
                 startService(i);
+
                 ((Chronometer) findViewById(chronometer2)).setBase(SystemClock.elapsedRealtime());
                 ((Chronometer) findViewById(chronometer2)).start();
             }
@@ -142,6 +144,11 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
                 runtime_permissions();
             }
         }
+    }
+
+    public void newLocationReceived(LatLng nLocation) {
+        GeoStamp g = new GeoStamp(geoStamps.size(), nLocation);
+        geoStamps.add(g);
     }
 
     @Override

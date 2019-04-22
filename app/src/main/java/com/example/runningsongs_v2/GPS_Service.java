@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,6 +23,7 @@ public class GPS_Service extends Service {
 
     private LocationListener locationListener;
     private LocationManager locationManager;
+    public GPS_Service_Delegate delegate = null;
     private static String Tag="GPS_Service";
     static Double lat1 = null;
     static Double lon1 = null;
@@ -72,6 +75,10 @@ public class GPS_Service extends Service {
                     Double speed = distance/timeElapsed;
                     Toast.makeText(getApplicationContext(), "Distance is: "
                             +distance +"\n "+ "Speed is: " + speed + "km/h", Toast.LENGTH_SHORT).show();
+                    if (delegate != null) {
+                        LatLng nLocation = new LatLng(lat1, lon1);
+                        delegate.newLocationReceived(nLocation);
+                    }
 
                 }
                 status++;

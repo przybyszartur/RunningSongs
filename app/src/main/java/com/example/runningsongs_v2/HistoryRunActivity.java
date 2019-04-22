@@ -1,6 +1,7 @@
 package com.example.runningsongs_v2;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -45,7 +46,14 @@ public class HistoryRunActivity extends AppCompatActivity {
                 int id = c.getInt(0);
                 String date = c.getString(2);
                 String time = c.getString(3);
-                String songs = c.getString(4);
+                String locations = c.getString(4);
+                String songs = c.getString(5);
+
+                List<GeoStamp> nLocations = new ArrayList<>();
+                String[] locationParts = locations.split(";");
+                for (String part: locationParts) {
+                    nLocations.add(new GeoStamp(part));
+                }
 
                 List<SongStamp> nStamps = new ArrayList<SongStamp>();
                 String[] songParts = songs.split(";");
@@ -53,7 +61,7 @@ public class HistoryRunActivity extends AppCompatActivity {
                     nStamps.add(new SongStamp(part));
                 }
 
-                RunnerTracker n = new RunnerTracker(distance, date, time, nStamps);
+                RunnerTracker n = new RunnerTracker(distance, date, time, nStamps, nLocations);
                 trackerList.add(n);
                 c.moveToNext();
             }
@@ -92,6 +100,13 @@ public class HistoryRunActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void launchResultsActivity(RunnerTracker tracker) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("tracker", tracker);
+        Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
+        intent.putExtras(bundle);
     }
 
 

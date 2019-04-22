@@ -14,6 +14,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DISTANCE = "distance";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_TIME = "time";
+    public static final String COLUMN_LOCATIONS = "locations";
     public static final String COLUMN_SONG_STAMPS = "song_stamps";
 
     public DBHelper(Context context, String name,
@@ -31,7 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 TABLE_RUNNERTRACKER + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_DISTANCE
                 + " INTEGER," + COLUMN_DATE + " TEXT,"+
-                COLUMN_TIME + " TEXT,"+ COLUMN_SONG_STAMPS + " TEXT"+ ")";
+                COLUMN_TIME + " TEXT," + COLUMN_LOCATIONS + " TEXT," + COLUMN_SONG_STAMPS + " TEXT"+ ")";
         db.execSQL(CREATE_RUNNERTRACKER_TABLE);
 
     }
@@ -54,11 +55,20 @@ public class DBHelper extends SQLiteOpenHelper {
         int idx = 0;
         String f = "";
         for(SongStamp s: runnerTracker.getSongStamps()) {
-            // Example 1:title-artist:12.9219-92.009;2:title-artist:12.9219-92.009;
+            // Example 1:title###artist:12.9219###;
             f += (String.valueOf(idx) + ":" + s.song.title + "###" + s.song.artist + ":" + String.valueOf(s.latLng.latitude) + "###" + String.valueOf(s.latLng.longitude) + ";");
             idx += 1;
         }
         values.put(COLUMN_SONG_STAMPS, f);
+
+        idx = 0;
+        f = "";
+        for(GeoStamp g: runnerTracker.getGeoStamps()) {
+            // Example 1:lat###lng;
+            f += (String.valueOf(idx) + ":" + String.valueOf(g.getLatLng().latitude) + "###" + String.valueOf(g.getLatLng().longitude) + ";");
+            idx += 1;
+        }
+        values.put(COLUMN_LOCATIONS, f);
 
         SQLiteDatabase db = this.getWritableDatabase();
 

@@ -10,6 +10,7 @@ public class RunnerTracker implements Serializable {
     private double _distance;
     private String _Date;
     private String _time;
+    private List<GeoStamp> _geoStamps;
     private List<SongStamp> _songStamps;
 
     public RunnerTracker() {
@@ -29,11 +30,12 @@ public class RunnerTracker implements Serializable {
         this._time=time;
     }
 
-    public RunnerTracker(double distance, String date,String time, List<SongStamp> songStamps) {
+    public RunnerTracker(double distance, String date, String time, List<SongStamp> songStamps, List<GeoStamp> geoStamps) {
         this._distance = distance;
         this._Date = date;
         this._time=time;
         _songStamps = songStamps;
+        _geoStamps = geoStamps;
     }
 
     public void setID(int id) {
@@ -68,4 +70,6 @@ public class RunnerTracker implements Serializable {
     }
 
     public List<SongStamp> getSongStamps() { return this._songStamps; }
+
+    public List<GeoStamp> getGeoStamps() { return this._geoStamps; }
 }
