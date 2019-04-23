@@ -2,14 +2,18 @@ package com.example.runningsongs_v2;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public final class GeoStamp {
+import java.io.Serializable;
+
+public final class GeoStamp implements Serializable {
 
     private Integer _id;
-    private LatLng _latLng;
+    private Double latitude;
+    private Double longitude;
 
     public GeoStamp(int id, LatLng latLng) {
         _id = id;
-        _latLng = latLng;
+        latitude = latLng.latitude;
+        longitude = latLng.longitude;
     }
 
     public GeoStamp(String expression) {
@@ -18,13 +22,37 @@ public final class GeoStamp {
         _id = Integer.parseInt(parts[0]);
 
         String[] latLngParts = parts[1].split("###");
-        Double latitude = Double.parseDouble(latLngParts[0]);
-        Double longitude = Double.parseDouble(latLngParts[1]);
-        _latLng = new LatLng(latitude, longitude);
+        latitude = Double.parseDouble(latLngParts[0]);
+        longitude = Double.parseDouble(latLngParts[1]);
     }
 
     public Integer getId() { return _id; }
+    public void setId(Integer id) { _id = id; }
 
-    public LatLng getLatLng() { return _latLng; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public LatLng getLatLng() { return new LatLng(latitude, longitude); }
+
+    public static GeoStamp[] getFakeStamps() {
+        GeoStamp[] fakeStamps = {
+                new GeoStamp(0, new LatLng(53.446950, 14.491260)),
+                new GeoStamp(0, new LatLng(53.448367, 14.487604)),
+                new GeoStamp(0, new LatLng(53.452766, 14.484147)),
+                new GeoStamp(0, new LatLng(53.454680, 14.485626)),
+                new GeoStamp(0, new LatLng(53.456775, 14.490344)),
+                new GeoStamp(0, new LatLng(53.457133, 14.495578)),
+                new GeoStamp(0, new LatLng(53.455753, 14.497294)),
+                new GeoStamp(0, new LatLng(53.451713, 14.500205)),
+                new GeoStamp(0, new LatLng(53.450690, 14.500977)),
+                new GeoStamp(0, new LatLng(53.449975, 14.496172)),
+                new GeoStamp(0, new LatLng(53.444863, 14.497717)),
+                new GeoStamp(0, new LatLng(53.447214, 14.491196))
+        };
+        return fakeStamps;
+    }
 
 }

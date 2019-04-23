@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -103,7 +104,10 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
         double distance = Double.parseDouble(textView.getText().toString());
         String time =  ((Chronometer) findViewById(chronometer2)).getText().toString();
         String date = new SimpleDateFormat("dd--MM--yyyy").format(new Date());
-        RunnerTracker runnerTracker = new RunnerTracker(distance,date,time, songStamps, geoStamps);
+
+        List<GeoStamp> fakeStamps = Arrays.asList(GeoStamp.getFakeStamps());
+
+        RunnerTracker runnerTracker = new RunnerTracker(distance,date,time, songStamps, fakeStamps);
 
         dbHandler.addRunnerTracker(runnerTracker);
     }

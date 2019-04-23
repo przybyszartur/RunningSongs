@@ -97,6 +97,8 @@ public class HistoryRunActivity extends AppCompatActivity {
                     //String value = (String)adapter.getItemAtPosition(position);
                     // assuming string and if you want to get the value on click of list item
                     // do what you intend to do on click of listview row
+                    RunnerTracker tracker = trackerList.get(position);
+                    launchResultsActivity(tracker);
                 }
             });
         }
@@ -107,6 +109,7 @@ public class HistoryRunActivity extends AppCompatActivity {
         bundle.putSerializable("tracker", tracker);
         Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
         intent.putExtras(bundle);
+        startActivity(intent);
     }
 
 

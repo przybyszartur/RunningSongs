@@ -56,7 +56,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String f = "";
         for(SongStamp s: runnerTracker.getSongStamps()) {
             // Example 1:title###artist:12.9219###;
-            f += (String.valueOf(idx) + ":" + s.song.title + "###" + s.song.artist + ":" + String.valueOf(s.latLng.latitude) + "###" + String.valueOf(s.latLng.longitude) + ";");
+            f += (String.valueOf(idx) + ":" + s.getSong().title + "###" + s.getSong().artist + ":" + String.valueOf(s.getLatLng().latitude) + "###" + String.valueOf(s.getLatLng().longitude) + ";");
             idx += 1;
         }
         values.put(COLUMN_SONG_STAMPS, f);
