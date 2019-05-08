@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,7 +21,12 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,9 +36,10 @@ import java.util.List;
 
 import static com.example.runningsongs_v2.R.id.chronometer2;
 
-public class NewRunActivity extends AppCompatActivity implements SongListenerDelegate {
+public class NewRunActivity extends AppCompatActivity implements SongListenerDelegate, OnMapReadyCallback {
     DBHelper dbHelper;
     SQLiteDatabase db;
+    FragmentActivity FA = new FragmentActivity();
 
     private TextView textView;
     private TextView textView2;
@@ -46,10 +53,17 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
     private List<SongStamp> songStamps;
     private List<GeoStamp> geoStamps;
 
+
+    private GoogleMap mMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.newrun);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         btn_start = (Button) findViewById(R.id.button3);
         textView = (TextView) findViewById(R.id.textView);
         songListener = new SongListener(this);
@@ -60,6 +74,7 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
         if(!runtime_permissions()){
             enable_buttons();
         }
+
 
     }
     @Override
@@ -164,5 +179,14 @@ public class NewRunActivity extends AppCompatActivity implements SongListenerDel
 
         SongStamp s = new SongStamp(id, song, latLng);
         songStamps.add(s);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        // Add a marker in Sydney and move the camera
+        LatLng zs = new LatLng(53.44 , 14.54);
+        mMap.addMarker(new MarkerOptions().position(zs).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(zs));
     }
 }
